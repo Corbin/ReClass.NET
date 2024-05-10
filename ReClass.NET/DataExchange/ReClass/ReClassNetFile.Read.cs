@@ -80,16 +80,29 @@ namespace ReClassNET.DataExchange.ReClass
 						var itemName = itemElement.Attribute(XmlNameAttribute)?.Value ?? string.Empty;
 						var itemValue = (long?)itemElement.Attribute(XmlValueAttribute) ?? 0L;
 
-						values.Add(itemName, itemValue);
+						
+						if (!values.ContainsKey(itemName))
+						{
+							values.Add(itemName, itemValue);
+						}
+						else
+						{
+							
+							values[itemName] = itemValue; 
+						}
 					}
 
-					var @enum = new EnumDescription
+					// Check if there are any values before adding the enum to prevent crashing
+					if (values.Count > 0)
 					{
-						Name = name
-					};
-					@enum.SetData(useFlagsMode, size, values);
+						var @enum = new EnumDescription
+						{
+							Name = name
+						};
+						@enum.SetData(useFlagsMode, size, values);
 
-					project.AddEnum(@enum);
+						project.AddEnum(@enum);
+					}
 				}
 			}
 
